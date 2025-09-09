@@ -54,8 +54,7 @@ flowchart LR
 
 🚀 Setup Instructions
 1. Clone Repository
-git clone https://github.com/your-username/neuralai2.git
-cd neuralai2
+https://github.com/VivekNandimandalam/NeuraltalkAi_Project.git
 
 2. Prerequisites
 
