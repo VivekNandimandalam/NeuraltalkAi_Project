@@ -1,5 +1,11 @@
 NeuraltalkAI – Automated Invoice Processing Workflow
 
+
+
+
+<img width="786" height="299" alt="image" src="https://github.com/user-attachments/assets/339fe80c-540e-4359-a5b3-7f42d2e8bf4b" />
+
+
 📌 Overview
 
 NeuralAi is an end-to-end automated invoice processing system built on n8n
