@@ -1,0 +1,1140 @@
+{
+  "name": "neuralai2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        352
+      ],
+      "id": "96511e8f-3274-4590-97d3-d1565889411c",
+      "name": "Telegram Trigger",
+      "webhookId": "5a7074cf-2e58-4897-80fe-06512c8ec570",
+      "credentials": {
+        "telegramApi": {
+          "id": "UsfEU10JaDWLNKJF",
+          "name": "Nia59_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.message.document || $json.message.photo || ($json.message.text && $json.message.text.length > 50) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "id": "7bee128e-568f-495f-92a7-222c0b476684"
+            },
+            {
+              "id": "b887d2d5-6c2f-44b2-82b7-382f06facae5",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        336
+      ],
+      "id": "73608b85-7752-4213-9626-3f9581846c16",
+      "name": "Check Input Type"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.upstage.ai/v1/document-ai/ocr",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer up_Yw7SYclv2hIgpgeN94oYxxTmq5rjz"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "document",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        208
+      ],
+      "id": "db0dde76-1afb-47f6-8cf4-3c79df51aa08",
+      "name": "Upstage OCR"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              },
+              "id": "cbf53122-5e90-4af9-aaf8-85e50d19d41c"
+            },
+            {
+              "id": "37629d82-9b91-46cc-afbc-22c56d6bf5c6",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "a3b8d9a9-efb2-4638-9ec4-8c21f0d779e4",
+      "name": "Check Extraction Error"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "❌ **Error Processing Invoice**\\n\\n{{ $json.message }}\\n\\n**Missing Fields:** {{ $json.missingFields.join(', ') }}\\n\\nPlease send a clearer image/PDF with all required information:\\n• Item Name\\n• Price\\n• Shop Name\\n• Date",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        128
+      ],
+      "id": "c7da1cd9-a1e5-40b5-b7be-c642fd83c713",
+      "name": "Send Error Message",
+      "webhookId": "fa296cd6-cabd-4aeb-9516-d41801931c29",
+      "credentials": {
+        "telegramApi": {
+          "id": "UsfEU10JaDWLNKJF",
+          "name": "Nia59_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1h2E0D1o9mbTx6BesBxBITzY5EaIX4T901xR53MaIh_Y",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Expense_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1h2E0D1o9mbTx6BesBxBITzY5EaIX4T901xR53MaIh_Y/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A:Z"
+            }
+          },
+          "outputFormatting": {
+            "values": {
+              "general": "UNFORMATTED_VALUE",
+              "date": "FORMATTED_STRING"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1744,
+        336
+      ],
+      "id": "196e5c26-cb57-4076-ae4c-012700e7e549",
+      "name": "Check for Duplicates",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xhRKCjLKifrKJNsL",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all incoming items (invoice + sheet rows)\nconst inputs = $input.all().map(i => i.json);\n\n// Find the invoice data dynamically (not always first item)\nconst invoiceData = inputs.find(\n  row => row.Invoice_Number || row.Receipt_Number || row.checkReceiptNumber || row.Item_Name\n);\n\n// Everything else = sheet rows\nconst sheetData = inputs.filter(row => row !== invoiceData);\n\n// Normalize receipt/invoice number\nconst receiptNumber = (\n  invoiceData?.Invoice_Number ||\n  invoiceData?.Receipt_Number ||\n  invoiceData?.checkReceiptNumber ||\n  \"\"\n).toString().trim();\n\nlet isDuplicate = false;\n\nif (receiptNumber && sheetData.length > 0) {\n  isDuplicate = sheetData.some(row => {\n    const existing = (\n      row.Invoice_Number ||\n      row.Receipt_Number ||\n      \"\"\n    ).toString().trim();\n    return existing !== \"\" && existing.toLowerCase() === receiptNumber.toLowerCase();\n  });\n}\n\n// Return enriched invoice\nreturn [\n  {\n    json: {\n      ...invoiceData,\n      checkReceiptNumber: receiptNumber,\n      isDuplicate,\n      duplicateWarning: isDuplicate\n        ? `⚠️ Duplicate found: ${receiptNumber}`\n        : null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        336
+      ],
+      "id": "e1090ba8-8338-4401-9e56-638ca189ec2a",
+      "name": "Process Duplicate Check"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=data",
+        "name": "={{ $json.filenameOptions.simple }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1o0_rUgDhBl__ZwSus917Z1vsqJnXWSi7",
+          "mode": "list",
+          "cachedResultName": "neuralai",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1o0_rUgDhBl__ZwSus917Z1vsqJnXWSi7"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4016,
+        336
+      ],
+      "id": "9c444cdc-8664-47c7-b913-bd5d619bcc84",
+      "name": "Upload to Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xhbUYxl259epgrD3",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Update receipt link with Google Drive URL\nconst driveResponse = $input.first().json;\nconst invoiceData = $('Process Duplicate Check').first().json;\n\nconst driveLink = `https://drive.google.com/file/d/${driveResponse.id}/view`;\n\nreturn [{\n  json: {\n    ...invoiceData,\n    Receipt_Link: driveLink,\n    driveFileId: driveResponse.id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4432,
+        336
+      ],
+      "id": "b3b08501-fa2d-418c-ae75-d0e31a2a3ac1",
+      "name": "Update Receipt Link"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1h2E0D1o9mbTx6BesBxBITzY5EaIX4T901xR53MaIh_Y",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Expense_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1h2E0D1o9mbTx6BesBxBITzY5EaIX4T901xR53MaIh_Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Entry_ID",
+              "displayName": "Entry_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subcategory",
+              "displayName": "Subcategory",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item_Name",
+              "displayName": "Item_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit",
+              "displayName": "Unit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit_Price",
+              "displayName": "Unit_Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_Amount",
+              "displayName": "Total_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Currency",
+              "displayName": "Currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shop_Name",
+              "displayName": "Shop_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shop_Address",
+              "displayName": "Shop_Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment_Method",
+              "displayName": "Payment_Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GST_Rate",
+              "displayName": "GST_Rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GST_Amount",
+              "displayName": "GST_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Receipt_Link",
+              "displayName": "Receipt_Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Receipt_Number",
+              "displayName": "Receipt_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created_Date",
+              "displayName": "Created_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Modified_Date",
+              "displayName": "Modified_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Duplicate_Check",
+              "displayName": "Duplicate_Check",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telegramData",
+              "displayName": "telegramData",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DateTime",
+              "displayName": "DateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "checkReceiptNumber",
+              "displayName": "checkReceiptNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "success",
+              "displayName": "success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "extractedText",
+              "displayName": "extractedText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "isDuplicate",
+              "displayName": "isDuplicate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "duplicateWarning",
+              "displayName": "duplicateWarning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "driveFileId",
+              "displayName": "driveFileId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4624,
+        336
+      ],
+      "id": "fbb9312a-62c5-4b1c-a32f-cd6894996176",
+      "name": "Save to Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Qr2mkRboCKVvBdR4",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegramData.message.chat.id }}",
+        "text": "=✅ **Invoice Processed Successfully!**",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4832,
+        336
+      ],
+      "id": "a8b3f744-9fce-4ac4-82d7-8cfd5645dbb2",
+      "name": "Send Success Message",
+      "webhookId": "48501080-04f9-4c75-a3d0-a472e5793436",
+      "credentials": {
+        "telegramApi": {
+          "id": "UsfEU10JaDWLNKJF",
+          "name": "Nia59_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the best quality file_id from Telegram photo array or document\nconst processedData = $input.first().json;\nconst telegramData = processedData.telegramData;\n\nlet fileId = null;\nlet fileType = 'jpg'; // default\nlet fileName = 'invoice';\n\nconsole.log('Telegram message data:', JSON.stringify(telegramData.message, null, 2));\n\n// Check if it's a document\nif (telegramData.message.document) {\n  fileId = telegramData.message.document.file_id;\n  fileName = telegramData.message.document.file_name || 'document';\n  \n  // Get file extension from mime_type or file_name\n  if (telegramData.message.document.mime_type) {\n    if (telegramData.message.document.mime_type.includes('pdf')) {\n      fileType = 'pdf';\n    } else if (telegramData.message.document.mime_type.includes('image')) {\n      fileType = 'jpg';\n    }\n  } else if (telegramData.message.document.file_name) {\n    const docFileName = telegramData.message.document.file_name.toLowerCase();\n    if (docFileName.includes('.pdf')) fileType = 'pdf';\n    else if (docFileName.includes('.png')) fileType = 'png';\n    else if (docFileName.includes('.jpg') || docFileName.includes('.jpeg')) fileType = 'jpg';\n  }\n  \n  console.log('Document detected - File ID:', fileId, 'Type:', fileType);\n}\n// Check if it's a photo (get the highest resolution)\nelse if (telegramData.message.photo && telegramData.message.photo.length > 0) {\n  // Sort by file_size to get the largest/best quality image\n  const photos = telegramData.message.photo.sort((a, b) => (b.file_size || 0) - (a.file_size || 0));\n  const bestPhoto = photos[0];\n  fileId = bestPhoto.file_id;\n  fileType = 'jpg';\n  fileName = 'photo';\n  \n  console.log('Photo detected - File ID:', fileId, 'Size:', bestPhoto.file_size, 'Dimensions:', bestPhoto.width + 'x' + bestPhoto.height);\n}\n\n// If no file found, return error\nif (!fileId) {\n  console.log('No file found in message');\n  return [{\n    json: {\n      error: true,\n      message: 'No file (photo or document) found in the message',\n      chatId: telegramData.message.chat.id\n    }\n  }];\n}\n\nconsole.log('Selected file_id:', fileId);\nconsole.log('File type:', fileType);\n\n// Return the processed data with file information\nreturn [{\n  json: {\n    ...processedData,\n    selectedFileId: fileId,\n    fileType: fileType,\n    originalFileName: fileName,\n    \n    // Keep all the original invoice data\n    Entry_ID: processedData.Entry_ID,\n    Date: processedData.Date,\n    DateTime: processedData.DateTime,\n    Type: processedData.Type,\n    Category: processedData.Category,\n    Subcategory: processedData.Subcategory,\n    Item_Name: processedData.Item_Name,\n    Description: processedData.Description,\n    Quantity: processedData.Quantity,\n    Unit: processedData.Unit,\n    Unit_Price: processedData.Unit_Price,\n    Total_Amount: processedData.Total_Amount,\n    Currency: processedData.Currency,\n    Shop_Name: processedData.Shop_Name,\n    Shop_Address: processedData.Shop_Address,\n    Payment_Method: processedData.Payment_Method,\n    GST_Rate: processedData.GST_Rate,\n    GST_Amount: processedData.GST_Amount,\n    Receipt_Link: processedData.Receipt_Link,\n    Receipt_Number: processedData.Receipt_Number,\n    Remarks: processedData.Remarks,\n    Tags: processedData.Tags,\n    Created_Date: processedData.Created_Date,\n    Modified_Date: processedData.Modified_Date,\n    Status: processedData.Status,\n    Duplicate_Check: processedData.Duplicate_Check,\n    \n    // Additional fields\n    isDuplicate: processedData.isDuplicate,\n    duplicateWarning: processedData.duplicateWarning,\n    success: true\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2992,
+        336
+      ],
+      "id": "96ad1214-bddf-4893-b17c-0e304471860b",
+      "name": "Get file id"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot8368743392:AAEWd9GFDJ8AHOY2Fv6BxVNuTWnjvmX0K3g/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.selectedFileId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3200,
+        336
+      ],
+      "id": "7c0122c1-d4b4-4d29-b25d-be717dbe2dc5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8368743392:AAEWd9GFDJ8AHOY2Fv6BxVNuTWnjvmX0K3g/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3408,
+        336
+      ],
+      "id": "4b16ed09-5200-4e39-a40e-769c03a981f5",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate clean, readable filename for invoice\nconst data = $input.first().json;\nconst binary = $input.first().binary;\n\nconsole.log('Input data for filename generation:', JSON.stringify(data, null, 2));\n\n// Clean function to remove special characters and spaces\nfunction cleanName(str) {\n  if (!str) return 'Unknown';\n  return str.toString()\n    .replace(/[^a-zA-Z0-9\\s]/g, '') // Remove special chars except spaces\n    .replace(/\\s+/g, '_') // Replace spaces with underscores\n    .replace(/_+/g, '_') // Replace multiple underscores with single\n    .substring(0, 30) // Limit length to 30 chars\n    .replace(/^_|_$/g, ''); // Remove leading/trailing underscores\n}\n\n// Extract and clean data\nconst date = data.Date || new Date().toISOString().split('T')[0];\nconst shopName = cleanName(data.Shop_Name || 'Unknown_Shop');\nconst itemName = cleanName(data.Item_Name || 'Item');\nconst amount = data.Total_Amount || '0';\nconst fileType = data.fileType || 'jpg';\nconst category = cleanName(data.Category || 'Expense');\nconst receiptNumber = data.Receipt_Number || 'No_Receipt';\n\n// Generate different filename formats\nconst filenameFormats = {\n  // Most readable format: Date_Shop_Item_Amount\n  detailed: `${date}_${shopName}_${itemName}_₹${amount}.${fileType}`,\n  \n  // Simple format: Invoice_Date_Shop_Amount  \n  simple: `Invoice_${date}_${shopName}_₹${amount}.${fileType}`,\n  \n  // With category: Date_Category_Shop_Amount\n  withCategory: `${date}_${category}_${shopName}_₹${amount}.${fileType}`,\n  \n  // With receipt number: Date_Shop_ReceiptNumber\n  withReceipt: `${date}_${shopName}_${receiptNumber}.${fileType}`,\n  \n  // Short format: Date_Shop_Amount\n  short: `${date}_${shopName}_₹${amount}.${fileType}`\n};\n\n// Choose the detailed format as the main filename\nconst finalFilename = filenameFormats.detailed;\n\n// Log the generated options\nconsole.log('Generated filename options:');\nObject.keys(filenameFormats).forEach(key => {\n  console.log(`${key}: ${filenameFormats[key]}`);\n});\nconsole.log(`Selected filename: ${finalFilename}`);\n\n// Validate filename length (Google Drive has limits)\nif (finalFilename.length > 100) {\n  console.log('Warning: Filename is long, using short format');\n  const shortFilename = filenameFormats.short;\n  \n  return [{\n    json: {\n      ...data,\n      generatedFilename: shortFilename,\n      filenameOptions: filenameFormats,\n      warning: 'Used short filename due to length'\n    },\n    binary: binary\n  }];\n}\n\n// Return the data with generated filename\nreturn [{\n  json: {\n    ...data,\n    generatedFilename: finalFilename,\n    filenameOptions: filenameFormats\n  },\n  binary: binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3824,
+        336
+      ],
+      "id": "fe89f3e6-3b98-47f6-a303-f9ff993c150b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all()[0].json;\n\n// Extract OCR text if available\nconst ocrText = input.pages && input.pages.length > 0 \n  ? input.pages.map(page => page.text || \"\").join(\" \") \n  : \"No text found\";\n\n// Extract chat ID if this came from Telegram Trigger\nconst chatId = input.message?.chat?.id || null;\n\nreturn [{\n  json: {\n    chatId,  // ✅ Forwarded downstream\n    model: \"gpt-4o\",\n    messages: [\n      {\n        \"role\": \"system\",\n        \"content\": `You are an invoice parser.\nReturn ONLY valid JSON (no text, no explanations).\nThe JSON must be structured like this:\n\n{\n  \"shop\": {\n    \"name\": \"\",\n    \"address\": \"\",\n    \"gstin\": \"\",\n    \"fssai\": \"\",\n    \"otherIds\": {}\n  },\n  \"invoice\": {\n    \"invoiceNumber\": \"\",\n    \"orderNumber\": \"\",\n    \"date\": \"\",\n    \"placeOfSupply\": \"\",\n    \"billTo\": \"\",\n    \"shipTo\": \"\"\n  },\n  \"items\": [\n    {\n      \"itemName\": \"\",\n      \"hsn\": \"\",\n      \"quantity\": \"\",\n      \"unit\": \"\",\n      \"unitPrice\": \"\",\n      \"discount\": \"\",\n      \"taxRate\": \"\",\n      \"taxAmount\": \"\",\n      \"total\": \"\"\n    }\n  ],\n  \"charges\": {\n    \"deliveryFee\": \"\",\n    \"handlingFee\": \"\",\n    \"otherCharges\": {}\n  },\n  \"summary\": {\n    \"subTotal\": \"\",\n    \"taxAmount\": \"\",\n    \"totalAmount\": \"\"\n  }\n}\n\nRules:\n- Always return a valid JSON object (no comments, no extra text).\n- If a field is missing in the OCR text, leave it as an empty string.\n- \"otherIds\" and \"otherCharges\" should capture any additional identifiers or fees not covered by standard fields.`\n      },\n      {\n        \"role\": \"user\",\n        \"content\": `Extract structured invoice data from this OCR text:\\n\\n${ocrText}`\n      }\n    ],\n    temperature: 0.1,\n    max_tokens: 3000\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        208
+      ],
+      "id": "e42dfddc-e045-4ff0-9f41-97fc66abda4f",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.messages[0].content }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.messages[1].content }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        656,
+        208
+      ],
+      "id": "5695a08a-d049-4b6f-942e-1ed4bfde5e9c",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "BztOGWlOAhVcI0m5",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Robust JSON extractor for n8n Code node\n// Always outputs { ... , error: false } on success\n// or { error: true, message, raw, parseError? } on failure\n\nconst items = $input.all();\n\nconst outputs = items.map(item => {\n  const json = item.json || {};\n  const chatId = json.chatId || null; // ✅ Keep chatId if present\n  let content;\n\n  // try common locations for assistant content\n  if (json.message && json.message.content !== undefined) content = json.message.content;\n  else if (json.content !== undefined) content = json.content;\n  else if (json.result && json.result.content !== undefined) content = json.result.content;\n  else content = json; // fallback to whole json\n\n  // If it's already an object, just return it with error: false\n  if (typeof content === 'object' && content !== null) {\n    return { json: { ...content, chatId, error: false } };\n  }\n\n  // If nothing found\n  if (content === undefined || content === null) {\n    return { json: { error: true, message: 'No content found in input', raw: content, chatId } };\n  }\n\n  let raw = String(content);\n\n  // Remove markdown code fences like ```json ... ``` or ```\n  raw = raw.replace(/```json\\s*([\\s\\S]*?)```/gi, '$1');\n  raw = raw.replace(/```([\\s\\S]*?)```/g, '$1');\n  raw = raw.trim();\n\n  // Remove surrounding quotes if present\n  if ((raw.startsWith('\"') && raw.endsWith('\"')) || (raw.startsWith(\"'\") && raw.endsWith(\"'\"))) {\n    raw = raw.slice(1, -1).trim();\n  }\n\n  // Try parsing the JSON\n  try {\n    const parsed = JSON.parse(raw);\n    return { json: { ...parsed, chatId, error: false } };\n  } catch (e) {\n    // Fallback: extract the first {...} block\n    const match = raw.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      try {\n        const parsed2 = JSON.parse(match[0]);\n        return { json: { ...parsed2, chatId, error: false } };\n      } catch (e2) {\n        return { json: { error: true, message: 'Failed to parse extracted JSON block', parseError: e2.message, raw, chatId } };\n      }\n    }\n    // Nothing workable found\n    return { json: { error: true, message: 'No valid JSON found in assistant output', raw, chatId } };\n  }\n});\n\nreturn outputs;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        208
+      ],
+      "id": "f8f63c18-4d55-404b-a6e8-b927f97c079b",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc6257a7-432d-430d-9a00-7e99f71cf300",
+              "leftValue": "={{ $json.isDuplicate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        336
+      ],
+      "id": "94859525-8023-4af7-bd90-8c381acdbdbc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "=1014408680",
+        "text": "=⚠️ Duplicate detected!  \nReceipt: {{$json[\"Receipt_Number\"]}}  \nShop: {{$json[\"Shop_Name\"]}}  \nAmount: {{$json[\"Total_Amount\"]}} {{$json[\"Currency\"]}}  \n\n(This is just a warning, the invoice will still be processed.)\n",
+        "replyMarkup": "inlineKeyboard",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2576,
+        240
+      ],
+      "id": "fa7f90e7-64c4-43d7-a261-e82a6cd7fdb0",
+      "name": "Send a text message",
+      "webhookId": "c53926f3-4b0c-47a8-b4bd-aeae47007547",
+      "credentials": {
+        "telegramApi": {
+          "id": "UsfEU10JaDWLNKJF",
+          "name": "Nia59_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7f98738e-6eb3-4fac-aa25-d2c3b93cc6bd",
+              "leftValue": "{$json[\"callback_query\"][\"data\"]}} ",
+              "rightValue": "continue_insert",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        432
+      ],
+      "id": "689686d9-b552-48ae-a834-3874b614c957",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "🛑 Process stopped. The duplicate entry was not added.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        528
+      ],
+      "id": "246b98da-f241-43f2-83c0-895792ef7aa8",
+      "name": "Send a text message1",
+      "webhookId": "67ca099b-2f68-4d72-a637-7b1544cf8aea",
+      "credentials": {
+        "telegramApi": {
+          "id": "UsfEU10JaDWLNKJF",
+          "name": "Nia59_bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Input Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Input Type": {
+      "main": [
+        [
+          {
+            "node": "Upstage OCR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upstage OCR": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Extraction Error": {
+      "main": [
+        [
+          {
+            "node": "Send Error Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check for Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Process Duplicate Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Duplicate Check": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Update Receipt Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Receipt Link": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file id": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Check Extraction Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get file id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7ff24df3-075d-4bfb-a293-e18638f53b47",
+  "meta": {
+    "instanceId": "91a0b24608cc73cdf293e80696e997dd56c2c12137b22e220123a8af553e9785"
+  },
+  "id": "FEPABeH4A1kwjd4R",
+  "tags": []
+}
