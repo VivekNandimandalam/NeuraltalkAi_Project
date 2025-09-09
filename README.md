@@ -2,7 +2,7 @@ NeuraltalkAI – Automated Invoice Processing Workflow
 
 📌 Overview
 
-NeuralAI2 is an end-to-end automated invoice processing system built on n8n
+NeuralAi is an end-to-end automated invoice processing system built on n8n
 .
 It integrates Telegram, Upstage OCR, Google Sheets, Google Drive, and custom logic to streamline invoice management.
 
